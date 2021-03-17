@@ -23,10 +23,14 @@ class PostFactory extends Factory
     public function definition()
     {
         $users = User::all()->pluck('id');
+        $images = [];
+        for ($index = 0; $index <= $this->faker->randomDigitNotNull(); $index++) {
+            array_push($images, $this->faker->imageUrl(1280, 720));
+        }
         return [
             'user_id' => $this->faker->randomElement($users),
             'content' => $this->faker->text(),
-            'image' => $this->faker->imageUrl(1280,720),
+            'images' => json_encode($images, JSON_UNESCAPED_SLASHES),
             'likes' => 0,
         ];
     }

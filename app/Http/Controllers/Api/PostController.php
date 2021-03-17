@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PostRequest as Request;
+use App\Http\Resources\v1\PostResource;
 use App\Models\Post;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class PostController extends Controller
@@ -16,8 +17,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all()->toArray();
-        return response()->json(['posts'=>$posts], Response::HTTP_CREATED);
+        $posts = Post::latest()->paginate();
+        return PostResource::collection($posts);
     }
 
     /**
@@ -28,7 +29,11 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $input = $request->all();
+        $post = Post::create($input);
+        return new PostResource($post);
+
     }
 
     /**
@@ -39,7 +44,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        return new PostResource($post);
     }
 
     /**
@@ -62,6 +67,7 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return response()->json(['message' => 'Post Deleted.'], Response::HTTP_OK);
     }
 }

@@ -16,10 +16,10 @@ class CreatePostsTable extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->index();
-            
-            $table->string('content');
-            $table->string('image');
-            $table->bigInteger('likes');
+
+            $table->string('content')->default('');
+            $table->json('images')->nullable(false);
+            $table->bigInteger('likes')->default(0);
 
             $table->timestamps();
         });
