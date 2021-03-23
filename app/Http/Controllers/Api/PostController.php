@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest as Request;
 use App\Http\Resources\v1\PostResource;
 use App\Models\Post;
+use App\Traits\ApiResponser;
 use Symfony\Component\HttpFoundation\Response;
 
 class PostController extends Controller
 {
+    use ApiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -29,10 +31,15 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        if (auth()->user()->cannot('create', Post::class)) {
+            return $this->error("You can't perform this action", Response::HTTP_FORBIDDEN);
+        }
 
         $input = $request->all();
-        $post = Post::create($input);
-        return new PostResource($post);
+        $input['user_id'] = auth()->user()->id;
+
+        $response = Post::create($input);
+        return new PostResource($response);
 
     }
 
@@ -56,7 +63,9 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        if (auth()->user()->cannot('update', $post)) {
+            return $this->error("This post isn't yours", Response::HTTP_FORBIDDEN);
+        }
     }
 
     /**
@@ -67,6 +76,10 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        if (auth()->user()->cannot('delete', $post)) {
+            return $this->error("This post isn't yours", Response::HTTP_FORBIDDEN);
+        }
+
         $post->delete();
         return response()->json(['message' => 'Post Deleted.'], Response::HTTP_OK);
     }

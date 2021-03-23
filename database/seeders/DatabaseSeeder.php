@@ -2,8 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\{ User, Post, Category };
+use App\Models\Category;
+
+use App\Models\Post;
+use App\Models\User;use Illuminate\Database\Seeder;
+
 class DatabaseSeeder extends Seeder
 {
     /**
